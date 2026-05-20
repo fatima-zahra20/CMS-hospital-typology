@@ -1,0 +1,59 @@
+# =============================================================
+# CMS-hospital-typology — .gitignore
+# Python + Jupyter + SQLite + CMS data pipeline
+# =============================================================
+
+# --- Data files (raw, large, regenerable from CMS API) ---
+data/
+*.csv
+*.parquet
+*.xlsx
+*.xls
+*.tsv
+
+# --- Databases (regenerable from ingestion pipeline) ---
+*.db
+*.sqlite
+*.sqlite3
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Secrets / environment variables ---
+.env
+*.env
+secrets.json
+
+# --- Outputs (uncomment ONLY if these get too large to track) ---
+# agg_output/
+# *.png
+# *.svg
