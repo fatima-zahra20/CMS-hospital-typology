@@ -2,15 +2,25 @@ DROP TABLE IF EXISTS clean_medicare_spending;
 
 CREATE TABLE clean_medicare_spending AS
 SELECT
-    "Facility ID"            AS facility_id,
-    "Period"                 AS period,
-    "Claim Type"             AS claim_type,
-    "Avg Spndg Per EP Hospital"   AS avg_spd_ep_hospital,
-    "Avg Spndg Per EP State"      AS avg_spd_ep_state,
-    "Avg Spndg Per EP National"   AS avg_spd_ep_national,
-    "Percent of Spndg Hospital"   AS pct_spend_hospital,
-    "Percent of Spndg State"      AS pct_spend_state,
-    "Percent of Spndg National"   AS pct_spend_national
+    -- CCN: pad to 6 digits to restore leading zeros stripped by pandas
+    printf('%06d', CAST("Facility ID" AS INTEGER))               AS facility_id,
+    
+    -- Text dimensions: trim + null out empty strings
+    NULLIF(TRIM("Period"),       '')                              AS period,
+    NULLIF(TRIM("Claim Type"),   '')                              AS claim_type,
+    
+    -- Spending amounts: already numeric in staging, just cast to REAL to be safe
+    CAST("Avg Spndg Per EP Hospital" AS REAL)                    AS avg_spd_ep_hospital,
+    CAST("Avg Spndg Per EP State"    AS REAL)                    AS avg_spd_ep_state,
+    CAST("Avg Spndg Per EP National" AS REAL)                    AS avg_spd_ep_national,
+    
+    -- Percentages: strip '%' sign, then cast to REAL
+    CAST(REPLACE("Percent of Spndg Hospital", '%', '') AS REAL)  AS pct_spend_hospital,
+    CAST(REPLACE("Percent of Spndg State",    '%', '') AS REAL)  AS pct_spend_state,
+    CAST(REPLACE("Percent of Spndg National", '%', '') AS REAL)  AS pct_spend_national
 FROM stg_medicare_spending;
 
 SELECT COUNT(*) AS row_count FROM clean_medicare_spending;
+
+-- Expected: close to 63,646 (should match nearly all rows)
+-- Got them 63448 matched 
