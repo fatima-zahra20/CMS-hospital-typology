@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS clean_unplanned_visits;
-
 CREATE TABLE clean_unplanned_visits AS
 SELECT
     -- CCN: already TEXT and 6 digits, just trim/null defensively
@@ -11,12 +10,23 @@ SELECT
     NULLIF(NULLIF(TRIM("Compared to National"), ''), 'Not Available')   AS compared_to_national,
     NULLIF(TRIM("Footnote"),              '')      AS footnote,
     
-    -- Numeric columns with suppressed strings: null-safe CAST to REAL
+    -- Count columns: standardized denominator + raw patient counts
     CASE 
         WHEN TRIM("Denominator") IN ('', 'Not Available', 'Not Applicable') THEN NULL
         ELSE CAST("Denominator" AS INTEGER)
     END                                            AS denominator,
     
+    CASE 
+        WHEN TRIM("Number of Patients") IN ('', 'Not Available', 'Not Applicable') THEN NULL
+        ELSE CAST("Number of Patients" AS INTEGER)
+    END                                            AS number_of_patients,
+    
+    CASE 
+        WHEN TRIM("Number of Patients Returned") IN ('', 'Not Available', 'Not Applicable') THEN NULL
+        ELSE CAST("Number of Patients Returned" AS INTEGER)
+    END                                            AS number_of_patients_returned,
+    
+    -- Rate statistics
     CASE 
         WHEN TRIM("Score") IN ('', 'Not Available', 'Not Applicable') THEN NULL
         ELSE CAST("Score" AS REAL)
@@ -42,7 +52,6 @@ SELECT
         WHEN "End Date" IS NULL OR TRIM("End Date") = '' THEN NULL
         ELSE substr("End Date", 7, 4) || '-' || substr("End Date", 1, 2) || '-' || substr("End Date", 4, 2)
     END                                            AS end_date
-
 FROM stg_unplanned_visits;
 
 SELECT COUNT(*) AS row_count FROM clean_unplanned_visits;
