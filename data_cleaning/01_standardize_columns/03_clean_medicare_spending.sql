@@ -1,5 +1,4 @@
 DROP TABLE IF EXISTS clean_medicare_spending;
-
 CREATE TABLE clean_medicare_spending AS
 SELECT
     -- CCN: pad to 6 digits to restore leading zeros stripped by pandas
@@ -17,10 +16,12 @@ SELECT
     -- Percentages: strip '%' sign, then cast to REAL
     CAST(REPLACE("Percent of Spndg Hospital", '%', '') AS REAL)  AS pct_spend_hospital,
     CAST(REPLACE("Percent of Spndg State",    '%', '') AS REAL)  AS pct_spend_state,
-    CAST(REPLACE("Percent of Spndg National", '%', '') AS REAL)  AS pct_spend_national
+    CAST(REPLACE("Percent of Spndg National", '%', '') AS REAL)  AS pct_spend_national,
+    
+    -- Reporting window — match your ISO-date pattern from the other clean tables
+    DATE(NULLIF(TRIM("Start Date"), ''))                         AS start_date,
+    DATE(NULLIF(TRIM("End Date"),   ''))                         AS end_date
 FROM stg_medicare_spending;
 
 SELECT COUNT(*) AS row_count FROM clean_medicare_spending;
-
--- Expected: close to 63,646 (should match nearly all rows)
--- Got them 63448 matched 
+-- Expected: close to 63,646 (matched 63,448 originally)
