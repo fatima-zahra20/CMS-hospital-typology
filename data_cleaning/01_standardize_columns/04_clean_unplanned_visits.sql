@@ -4,11 +4,17 @@ SELECT
     -- CCN: already TEXT and 6 digits, just trim/null defensively
     NULLIF(TRIM("Facility ID"), '')                AS facility_id,
     
-    -- Categorical text columns: trim + empty-string → NULL
+    -- Simple categorical text columns: trim + empty-string → NULL
     NULLIF(TRIM("Measure ID"),            '')      AS measure_id,
     NULLIF(TRIM("Measure Name"),          '')      AS measure_name,
-    NULLIF(NULLIF(TRIM("Compared to National"), ''), 'Not Available')   AS compared_to_national,
     NULLIF(TRIM("Footnote"),              '')      AS footnote,
+    
+    -- compared_to_national: case-normalize the "Number of cases too small" variant
+    CASE 
+        WHEN TRIM("Compared to National") = 'Number of cases too small' THEN 'Number of Cases Too Small'
+        WHEN TRIM("Compared to National") IN ('', 'Not Available')      THEN NULL
+        ELSE TRIM("Compared to National")
+    END                                            AS compared_to_national,
     
     -- Count columns: standardized denominator + raw patient counts
     CASE 
