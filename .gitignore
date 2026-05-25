@@ -15,7 +15,10 @@ data/
 *.db
 *.sqlite
 *.sqlite3
-
+*.db-journal
+*.db-shm
+*.db-wal
+hospital_typology.db.broken
 # --- Python ---
 __pycache__/
 *.py[cod]
