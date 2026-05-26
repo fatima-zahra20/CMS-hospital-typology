@@ -4,7 +4,10 @@ SELECT
     facility_id,
     hospital_name,
     state,
-    zip_code,
+	-- Zero-pad to 5 chars so this joins cleanly with clean_ruca and any other
+	-- ZIP-keyed table. CMS data drops leading zeros for Northeast states (CT, MA,
+	-- NJ, etc.) and Puerto Rico when ZIPs are read as integers upstream.
+	printf('%05d', CAST(zip_code AS INTEGER)) AS zip_code,
     hospital_type,
     ownership,
     CASE WHEN hospital_type = 'Acute Care Hospitals' THEN 1 ELSE 0 END AS included,
