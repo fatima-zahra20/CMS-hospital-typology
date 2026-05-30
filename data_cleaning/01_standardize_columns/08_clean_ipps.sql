@@ -26,9 +26,9 @@ SELECT
 
     -- Resident-to-bed ratio: real; zero is a VALID value here (means non-teaching)
     CAST(resident_to_bed_ratio AS REAL) AS resident_to_bed_ratio,
-
+	    
     -- DSH patient %: real on 0-1 scale (safety-net burden indicator)
-    CAST(dsh_pct AS REAL) AS dsh_pct,
+    NULLIF(CAST(dsh_pct AS REAL), 0) AS dsh_pct,
 
     -- Coarse urban/rural standardization (fine version comes from RUCA later)
     CASE
@@ -37,7 +37,9 @@ SELECT
         ELSE NULL
     END AS urban_rural_geo,
 
+
     -- Preserve the original CMS value for audit/traceability
     urban_rural_geo AS urban_rural_geo_raw
+	
 
 FROM stg_ipps;
