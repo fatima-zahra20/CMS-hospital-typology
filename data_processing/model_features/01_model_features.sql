@@ -51,14 +51,9 @@ overall_median AS (
 
 SELECT
     cs.ccn,
-
-    -- Log-transform bed count to pull in the right-skewed tail.
-    -- LN() requires SQLite 3.35+ math functions; DB Browser includes them.
-    LN(cs.bed_count) AS log_bed_count,
-
+    cs.bed_count,
     cs.cmi,
     cs.is_teaching,
-
     -- Impute NULL DSH with group median; fall back to overall median.
     COALESCE(
         cs.safety_net_burden,
